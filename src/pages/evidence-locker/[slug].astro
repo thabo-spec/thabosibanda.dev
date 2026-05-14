@@ -1,0 +1,23 @@
+---
+// src/pages/evidence-locker/[slug].astro
+// Generates one page per project entry in src/content/projects/
+import { getCollection, getEntry } from 'astro:content';
+import ProjectLayout from '../../layouts/ProjectLayout.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ id }: { id: string }) => {
+    return !id.startsWith('_');
+  });
+  return projects.map((project: any) => ({
+    params: { slug: project.slug },
+    props:  { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+---
+
+<ProjectLayout frontmatter={project.data}>
+  <Content />
+</ProjectLayout>

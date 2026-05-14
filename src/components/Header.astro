@@ -1,0 +1,83 @@
+---
+// src/components/Header.astro
+const navLinks = [
+  { href: '/',                 label: 'Home' },
+  { href: '/evidence-locker', label: 'Evidence Locker' },
+  { href: '/skills',          label: 'Skills Map' },
+  { href: '/about',           label: 'About' },
+  { href: '/contact',         label: 'Contact' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header style="
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 22, 40, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(74, 158, 202, 0.12);
+">
+  <div class="container" style="
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  ">
+
+    <!-- Wordmark -->
+    <a href="/" style="
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    ">
+      <span style="
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        background: #0a1628;
+        border: 1px solid rgba(0,212,170,0.3);
+        font-size: 12px;
+        font-weight: 700;
+        color: #00d4aa;
+      ">TS</span>
+      <span style="color: var(--text-primary);">Thabo Sibanda</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <nav aria-label="Main navigation" style="display: flex; align-items: center; gap: var(--space-1);">
+      {navLinks.map(link => {
+        const isActive = currentPath === link.href ||
+          (link.href !== '/' && currentPath.startsWith(link.href));
+        return (
+          <a
+            href={link.href}
+            style={`
+              font-size: var(--text-sm);
+              padding: var(--space-2) var(--space-3);
+              border-radius: var(--radius-md);
+              transition: all 0.15s ease;
+              text-decoration: none;
+              color: ${isActive ? 'var(--accent-primary)' : 'var(--text-muted)'};
+              background: ${isActive ? 'rgba(0,212,170,0.08)' : 'transparent'};
+            `}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        );
+      })}
+    </nav>
+
+  </div>
+</header>

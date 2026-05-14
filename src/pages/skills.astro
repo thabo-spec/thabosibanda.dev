@@ -1,0 +1,656 @@
+---
+// src/pages/skills.astro
+// ─────────────────────────────────────────────────────────────────
+// Skills Map — interactive radar chart with offensive / defensive
+// mode toggle, proficiency bars, tool tags, and cert badges.
+// Rendered fully client-side with Chart.js (no SSR needed).
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const certifications = [
+  { name: 'CompTIA Security+', issuer: 'CompTIA',    status: 'earned',    year: '2023' },
+  { name: 'eJPT',              issuer: 'eLearnSecurity', status: 'earned', year: '2024' },
+  { name: 'CEH',               issuer: 'EC-Council', status: 'progress',  year: 'In Progress' },
+  { name: 'OSCP',              issuer: 'Offensive Security', status: 'target', year: 'Target 2025' },
+];
+---
+
+<BaseLayout
+  title="Skills Map"
+  description="Thabo Sibanda's technical skill map — proficiency across offensive and defensive cybersecurity domains, tools, and certifications."
+>
+
+<!-- ── Page header ─────────────────────────────────────────────── -->
+<header style="
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-default);
+  padding: var(--space-16) 0 var(--space-10);
+">
+  <div class="container">
+    <div style="
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--accent-primary);
+      margin-bottom: var(--space-4);
+    ">// skills_map/</div>
+
+    <h1 style="margin-bottom: var(--space-4);">Skills Map</h1>
+
+    <p style="max-width: 58ch; font-size: var(--text-lg); color: var(--text-secondary);">
+      Proficiency across core security domains, mapped to the tools and techniques
+      used in real engagements. Toggle between offensive and defensive views.
+    </p>
+
+    <!-- Mode toggle -->
+    <div id="mode-toggle" style="
+      display: flex;
+      gap: var(--space-2);
+      margin-top: var(--space-8);
+      flex-wrap: wrap;
+    ">
+      <button
+        data-mode="offensive"
+        class="mode-btn active"
+        aria-pressed="true"
+      >Offensive</button>
+      <button
+        data-mode="defensive"
+        class="mode-btn"
+        aria-pressed="false"
+      >Defensive</button>
+      <button
+        data-mode="all"
+        class="mode-btn"
+        aria-pressed="false"
+      >All domains</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Main content ────────────────────────────────────────────── -->
+<section style="padding: var(--space-16) 0;">
+  <div class="container">
+
+    <div style="
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: var(--space-8);
+      align-items: start;
+    " class="skills-grid">
+
+      <!-- Left: radar chart + certifications ──────────────────── -->
+      <div>
+        <!-- Radar chart card -->
+        <div class="card" style="margin-bottom: var(--space-8); position: relative;">
+          <div style="position: relative; width: 100%; max-width: 480px; margin: 0 auto;">
+
+            <!-- Tooltip -->
+            <div id="radar-tooltip" style="
+              position: absolute;
+              background: var(--color-navy-950, #060e1a);
+              border: 1px solid rgba(0,212,170,0.3);
+              border-radius: var(--radius-md);
+              padding: var(--space-2) var(--space-4);
+              pointer-events: none;
+              opacity: 0;
+              transition: opacity 0.15s ease;
+              z-index: 10;
+              white-space: nowrap;
+            ">
+              <div id="tt-domain" style="
+                font-family: var(--font-mono);
+                font-size: var(--text-xs);
+                color: var(--color-ice-200, #9acce6);
+                margin-bottom: 2px;
+              "></div>
+              <div id="tt-score" style="
+                font-family: var(--font-mono);
+                font-size: var(--text-lg);
+                font-weight: 700;
+                color: var(--accent-primary);
+              "></div>
+            </div>
+
+            <canvas
+              id="skills-radar"
+              role="img"
+              aria-label="Radar chart showing Thabo Sibanda's proficiency across six cybersecurity skill domains"
+              style="width: 100%;"
+            >
+              Skills data loads with JavaScript. Domains include Network Reconnaissance,
+              Web Application Exploitation, Active Directory Attacks, Privilege Escalation,
+              SIEM and Log Analysis, and Incident Response.
+            </canvas>
+          </div>
+        </div>
+
+        <!-- Certifications ──────────────────────────────────── -->
+        <div class="card">
+          <div style="
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--border-default);
+          ">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="var(--accent-secondary)" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round"
+              aria-hidden="true">
+              <circle cx="12" cy="8" r="6"/>
+              <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/>
+            </svg>
+            <h2 style="font-size: var(--text-xl); margin: 0;">Certifications</h2>
+          </div>
+
+          <div style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--space-4);
+          ">
+            {certifications.map(cert => (
+              <div style="
+                background: var(--bg-surface);
+                border: 1px solid var(--border-default);
+                border-radius: var(--radius-md);
+                padding: var(--space-4);
+              ">
+                <div style="
+                  font-family: var(--font-heading);
+                  font-size: var(--text-base);
+                  font-weight: 600;
+                  color: var(--text-primary);
+                  margin-bottom: var(--space-1);
+                ">{cert.name}</div>
+
+                <div style="
+                  font-size: var(--text-sm);
+                  color: var(--text-muted);
+                  margin-bottom: var(--space-3);
+                ">{cert.issuer}</div>
+
+                <span class={`badge badge--${cert.status === 'earned' ? 'low' : cert.status === 'progress' ? 'high' : 'medium'}`}>
+                  {cert.year}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: skill bars sidebar ───────────────────────────── -->
+      <div id="skill-bars" style="display: flex; flex-direction: column; gap: var(--space-3);">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Domain description panel ────────────────────────────── -->
+    <div id="domain-detail" style="
+      margin-top: var(--space-10);
+      padding: var(--space-6);
+      border: 1px solid var(--border-default);
+      border-left: 3px solid var(--accent-primary);
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      background: var(--bg-secondary);
+      display: none;
+    ">
+      <div style="
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        color: var(--accent-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: var(--space-2);
+      " id="detail-label">Domain</div>
+      <h3 id="detail-name" style="font-size: var(--text-2xl); margin-bottom: var(--space-3);"></h3>
+      <p id="detail-desc" style="color: var(--text-secondary); margin-bottom: var(--space-4);"></p>
+      <div id="detail-tools" style="display: flex; flex-wrap: wrap; gap: var(--space-2);"></div>
+    </div>
+
+  </div>
+</section>
+
+</BaseLayout>
+
+
+<!-- ── Styles (scoped to this page) ───────────────────────────── -->
+<style>
+  .mode-btn {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.5em 1.4em;
+    border-radius: 20px;
+    border: 1px solid var(--border-default);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .mode-btn:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+  }
+
+  .mode-btn.active {
+    background: var(--accent-primary);
+    color: #0a1628;
+    border-color: var(--accent-primary);
+    font-weight: 600;
+  }
+
+  .skill-bar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.15s ease;
+  }
+
+  .skill-bar-card:hover,
+  .skill-bar-card.selected {
+    border-color: var(--accent-primary);
+    transform: translateX(-2px);
+  }
+
+  .skill-bar-card.selected {
+    background: var(--bg-hover);
+  }
+
+  .bar-track {
+    height: 3px;
+    background: var(--border-default);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: var(--space-2) 0;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: var(--space-2);
+  }
+
+  .skill-tag {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    border: 1px solid var(--border-subtle);
+  }
+
+  @media (max-width: 768px) {
+    .skills-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+
+<!-- ── Client-side JavaScript ──────────────────────────────────── -->
+<script>
+  // ── Skill data ──────────────────────────────────────────────────
+  const SKILLS = {
+    offensive: [
+      {
+        label: 'Network Reconnaissance',
+        score: 85,
+        color: '#00d4aa',
+        tags: ['Nmap', 'Masscan', 'Shodan', 'Amass'],
+        description: 'Systematic mapping of external and internal attack surfaces. Proficient in passive OSINT collection, active port scanning with service fingerprinting, and combining results into a structured target profile.',
+      },
+      {
+        label: 'Web App Exploitation',
+        score: 80,
+        color: '#00d4aa',
+        tags: ['Burp Suite', 'SQLi', 'XSS', 'SSRF', 'XXE', 'IDOR'],
+        description: 'End-to-end web application testing following OWASP methodology. Skilled in manual exploitation of injection flaws, authentication bypasses, and business logic vulnerabilities beyond automated scanner results.',
+      },
+      {
+        label: 'Privilege Escalation',
+        score: 78,
+        color: '#00d4aa',
+        tags: ['LinPEAS', 'WinPEAS', 'GTFOBins', 'SUID', 'Token Impersonation'],
+        description: 'Both Linux and Windows privilege escalation paths — SUID abuse, writable service binaries, token impersonation, DLL hijacking, and credential harvesting from misconfigured services.',
+      },
+      {
+        label: 'Active Directory Attacks',
+        score: 75,
+        color: '#00d4aa',
+        tags: ['BloodHound', 'Impacket', 'Rubeus', 'CrackMapExec', 'Mimikatz'],
+        description: 'Full AD attack chains including AS-REP Roasting, Kerberoasting, DCSync, Pass-the-Hash, and ACL abuse. Experienced in mapping attack paths with BloodHound and automating exploitation with Impacket.',
+      },
+      {
+        label: 'Password Attacks',
+        score: 72,
+        color: '#00d4aa',
+        tags: ['Hashcat', 'John the Ripper', 'Wordlist generation', 'Rule-based cracking'],
+        description: 'Offline hash cracking with custom rulesets and masks. Experienced in identifying hash types, selecting optimal attack modes, and constructing targeted wordlists from OSINT.',
+      },
+      {
+        label: 'Post-Exploitation',
+        score: 68,
+        color: '#00d4aa',
+        tags: ['Metasploit', 'Evil-WinRM', 'Persistence', 'Lateral movement'],
+        description: 'Maintaining access, lateral movement, and data exfiltration simulation in controlled lab environments. Focused on stealth techniques and documenting the full impact chain for remediation reporting.',
+      },
+    ],
+    defensive: [
+      {
+        label: 'SIEM & Log Analysis',
+        score: 75,
+        color: '#4a9eca',
+        tags: ['Splunk', 'ELK Stack', 'Wazuh', 'Event IDs', 'KQL'],
+        description: 'Constructing detection rules, writing SPL/KQL queries, and correlating events across sources to identify attack patterns. Proficient in building dashboards for SOC analyst workflows.',
+      },
+      {
+        label: 'Incident Response',
+        score: 70,
+        color: '#4a9eca',
+        tags: ['MITRE ATT&CK', 'Playbooks', 'Containment', 'Eradication', 'Timeline analysis'],
+        description: 'Applying structured IR methodology from initial triage through containment, eradication, and lessons-learned documentation. Experienced in host-based forensic evidence collection.',
+      },
+      {
+        label: 'Threat Intelligence',
+        score: 68,
+        color: '#4a9eca',
+        tags: ['OSINT', 'IOC analysis', 'MISP', 'VirusTotal', 'Threat feeds'],
+        description: 'Consuming and actioning threat intelligence from open-source feeds and commercial platforms. Experienced in IOC extraction, enrichment, and integrating intelligence into detection workflows.',
+      },
+      {
+        label: 'Network Monitoring',
+        score: 72,
+        color: '#4a9eca',
+        tags: ['Wireshark', 'Zeek', 'Suricata', 'NetworkMiner', 'pcap analysis'],
+        description: 'Deep packet inspection and traffic analysis for anomaly detection, malware C2 identification, and lateral movement detection across network captures.',
+      },
+      {
+        label: 'Vulnerability Management',
+        score: 65,
+        color: '#4a9eca',
+        tags: ['Nessus', 'OpenVAS', 'CVSS scoring', 'Remediation prioritisation'],
+        description: 'Running authenticated vulnerability scans, interpreting CVSS scores in business context, and building remediation roadmaps that balance risk with operational constraints.',
+      },
+      {
+        label: 'Cloud Security',
+        score: 55,
+        color: '#4a9eca',
+        tags: ['AWS IAM', 'S3 hardening', 'CloudTrail', 'Security Hub', 'Misconfig detection'],
+        description: 'Identifying and remediating common AWS misconfigurations — overpermissive IAM policies, public S3 buckets, and exposed metadata services. Actively building expertise toward a cloud security specialisation.',
+      },
+    ],
+    all: [
+      {
+        label: 'Network Reconnaissance',
+        score: 85,
+        color: '#00d4aa',
+        tags: ['Nmap', 'Masscan', 'Shodan'],
+        description: 'Systematic mapping of external and internal attack surfaces.',
+      },
+      {
+        label: 'Web App Exploitation',
+        score: 80,
+        color: '#00d4aa',
+        tags: ['Burp Suite', 'SQLi', 'XSS'],
+        description: 'End-to-end web application testing following OWASP methodology.',
+      },
+      {
+        label: 'Active Directory Attacks',
+        score: 75,
+        color: '#00d4aa',
+        tags: ['BloodHound', 'Impacket', 'CrackMapExec'],
+        description: 'Full AD attack chains including AS-REP Roasting and DCSync.',
+      },
+      {
+        label: 'SIEM & Log Analysis',
+        score: 75,
+        color: '#4a9eca',
+        tags: ['Splunk', 'ELK Stack', 'Wazuh'],
+        description: 'Constructing detection rules and correlating events across sources.',
+      },
+      {
+        label: 'Incident Response',
+        score: 70,
+        color: '#4a9eca',
+        tags: ['MITRE ATT&CK', 'Playbooks', 'Timeline analysis'],
+        description: 'Structured IR methodology from triage through lessons-learned.',
+      },
+      {
+        label: 'Cloud Security',
+        score: 55,
+        color: '#4a9eca',
+        tags: ['AWS IAM', 'S3 hardening', 'CloudTrail'],
+        description: 'Identifying and remediating AWS misconfigurations.',
+      },
+    ],
+  };
+
+  // ── State ──────────────────────────────────────────────────────
+  let chart = null;
+  let currentMode = 'offensive';
+  let selectedIndex = -1;
+
+  // ── Radar chart ────────────────────────────────────────────────
+  function buildChart(mode) {
+    const items   = SKILLS[mode];
+    const labels  = items.map(d => d.label);
+    const scores  = items.map(d => d.score);
+    const isOff   = mode === 'offensive';
+    const accentC = isOff ? '#00d4aa' : mode === 'defensive' ? '#4a9eca' : '#00d4aa';
+    const fillC   = isOff
+      ? 'rgba(0,212,170,0.15)'
+      : mode === 'defensive' ? 'rgba(74,158,202,0.15)' : 'rgba(0,212,170,0.12)';
+
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const gridC  = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
+    const tickC  = isDark ? 'rgba(255,255,255,0.3)'  : 'rgba(0,0,0,0.4)';
+    const lblC   = isDark ? '#94b4cc' : '#334155';
+
+    if (chart) chart.destroy();
+
+    chart = new window.Chart(document.getElementById('skills-radar'), {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Proficiency %',
+          data: scores,
+          fill: true,
+          backgroundColor: fillC,
+          borderColor: accentC,
+          borderWidth: 2,
+          pointBackgroundColor: accentC,
+          pointBorderColor: isDark ? '#0a1628' : '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 8,
+          pointHoverBackgroundColor: accentC,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        animation: { duration: 550, easing: 'easeInOutQuart' },
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: false },
+        },
+        scales: {
+          r: {
+            min: 0,
+            max: 100,
+            ticks: {
+              stepSize: 25,
+              display: true,
+              color: tickC,
+              backdropColor: 'transparent',
+              font: { size: 9, family: "'JetBrains Mono', monospace" },
+              callback: v => v + '%',
+            },
+            grid:        { color: gridC, lineWidth: 0.5 },
+            angleLines:  { color: gridC, lineWidth: 0.5 },
+            pointLabels: {
+              color: lblC,
+              font: { size: 11, family: "'JetBrains Mono', monospace" },
+              padding: 10,
+            },
+          },
+        },
+        onHover: (evt, activeEls) => {
+          const tt = document.getElementById('radar-tooltip');
+          if (activeEls.length) {
+            const idx   = activeEls[0].index;
+            const skill = SKILLS[currentMode][idx];
+            document.getElementById('tt-domain').textContent = skill.label;
+            document.getElementById('tt-score').textContent  = Math.round(skill.score) + '%';
+            tt.style.left    = (evt.native.offsetX + 14) + 'px';
+            tt.style.top     = (evt.native.offsetY - 8) + 'px';
+            tt.style.opacity = '1';
+          } else {
+            tt.style.opacity = '0';
+          }
+        },
+        onClick: (evt, activeEls) => {
+          if (activeEls.length) selectSkill(activeEls[0].index);
+        },
+      },
+    });
+  }
+
+  // ── Skill bars ─────────────────────────────────────────────────
+  function buildSidebar(mode) {
+    const container = document.getElementById('skill-bars');
+    container.innerHTML = '';
+
+    SKILLS[mode].forEach((skill, i) => {
+      const card = document.createElement('div');
+      card.className = 'skill-bar-card';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('aria-label', `${skill.label}: ${Math.round(skill.score)}% proficiency`);
+
+      card.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:13px;font-weight:500;color:var(--text-primary)">${skill.label}</span>
+          <span style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:${skill.color}">${Math.round(skill.score)}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:0%;background:${skill.color}" data-target="${skill.score}"></div>
+        </div>
+        <div class="skill-tags">
+          ${skill.tags.map(t => `<span class="skill-tag">${t}</span>`).join('')}
+        </div>
+      `;
+
+      card.addEventListener('click',   () => selectSkill(i));
+      card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') selectSkill(i); });
+
+      container.appendChild(card);
+    });
+
+    // Animate bars in after a short delay
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        container.querySelectorAll('.bar-fill').forEach(el => {
+          el.style.width = el.dataset.target + '%';
+        });
+      }, 80);
+    });
+  }
+
+  // ── Domain detail panel ────────────────────────────────────────
+  function selectSkill(idx) {
+    const skill   = SKILLS[currentMode][idx];
+    const panel   = document.getElementById('domain-detail');
+    const cards   = document.querySelectorAll('.skill-bar-card');
+
+    // Deselect previous
+    cards.forEach(c => c.classList.remove('selected'));
+
+    if (selectedIndex === idx) {
+      // Toggle off
+      panel.style.display = 'none';
+      selectedIndex = -1;
+      return;
+    }
+
+    selectedIndex = idx;
+    cards[idx]?.classList.add('selected');
+
+    document.getElementById('detail-label').textContent = currentMode.toUpperCase() + ' DOMAIN';
+    document.getElementById('detail-name').textContent  = skill.label;
+    document.getElementById('detail-desc').textContent  = skill.description;
+
+    const toolsEl = document.getElementById('detail-tools');
+    toolsEl.innerHTML = skill.tags.map(t =>
+      `<span style="
+        font-size:12px;font-family:var(--font-mono);
+        padding:4px 12px;border-radius:4px;
+        background:rgba(74,158,202,0.1);
+        color:#6db4d8;
+        border:1px solid rgba(74,158,202,0.2);
+      ">${t}</span>`
+    ).join('');
+
+    panel.style.borderLeftColor = skill.color;
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ── Mode switch ────────────────────────────────────────────────
+  function setMode(mode) {
+    currentMode   = mode;
+    selectedIndex = -1;
+    document.getElementById('domain-detail').style.display = 'none';
+    buildChart(mode);
+    buildSidebar(mode);
+  }
+
+  // ── Toggle button wiring ───────────────────────────────────────
+  document.getElementById('mode-toggle').addEventListener('click', e => {
+    const btn = e.target.closest('.mode-btn');
+    if (!btn) return;
+
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+
+    setMode(btn.dataset.mode);
+  });
+
+  // ── Init ───────────────────────────────────────────────────────
+  // Wait for Chart.js to be available (loaded via CDN in BaseLayout or inline below)
+  function init() {
+    if (window.Chart) {
+      buildChart('offensive');
+      buildSidebar('offensive');
+    } else {
+      setTimeout(init, 50);
+    }
+  }
+
+  init();
+</script>
+
+<!-- Chart.js — loaded only on this page to avoid global bundle cost -->
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+  integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3oD+sCoJrzXJ+yKen9RtQ1jIWtzUAyfXpcndn8uXR83cKZSbcdDSA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>

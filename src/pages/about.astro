@@ -1,0 +1,142 @@
+---
+// src/pages/about.astro
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About"
+  description="About Thabo Sibanda — cybersecurity professional, analytical problem solver, and collaborative team player bridging technical depth with business impact."
+>
+
+<!-- Page header -->
+<header style="
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-default);
+  padding: var(--space-16) 0 var(--space-10);
+">
+  <div class="container" style="max-width: 780px;">
+    <div style="font-family: var(--font-mono); font-size: var(--text-sm); color: var(--accent-primary); margin-bottom: var(--space-4);">// about/</div>
+    <h1 style="margin-bottom: var(--space-4);">About Thabo</h1>
+    <p style="font-size: var(--text-xl); color: var(--text-secondary); max-width: 56ch; line-height: 1.6;">
+      Cybersecurity professional with a focus on analytical problem-solving,
+      proactive threat identification, and translating technical risk into
+      language that drives business decisions.
+    </p>
+  </div>
+</header>
+
+<!-- Main content -->
+<section style="padding: var(--space-16) 0;">
+  <div class="container" style="max-width: 780px;">
+
+    <!-- The story -->
+    <div style="margin-bottom: var(--space-16);">
+      <div style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: var(--space-4);">// origin_story</div>
+      <h2 style="font-size: var(--text-3xl); margin-bottom: var(--space-6);">The "Why" Behind the Work</h2>
+      <div style="color: var(--text-secondary); line-height: 1.8; font-size: var(--text-lg);">
+        <p style="margin-bottom: var(--space-4);">
+          I got into cybersecurity because I'm fundamentally a systems thinker — I find myself
+          naturally asking <em>"how could this break, and who would benefit if it did?"</em>
+          That question, applied to technology, is the job.
+        </p>
+        <p style="margin-bottom: var(--space-4);">
+          What drives me isn't the technical puzzle alone — it's the business consequence on the
+          other side of every misconfiguration. A service account with pre-auth disabled isn't just
+          a finding on a report; it's a path to customer data, to reputational damage, to real harm
+          for real people. That's the "warm heart" behind the "cool head."
+        </p>
+        <p>
+          The Evidence Locker on this site reflects that philosophy: every piece of documented work
+          connects a technical finding to its organisational impact and a clear remediation path.
+          Security without context is just noise.
+        </p>
+      </div>
+    </div>
+
+    <!-- Beyond the terminal -->
+    <div style="margin-bottom: var(--space-16);">
+      <div style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--accent-primary); text-transform: uppercase; letter-spacing: 0.14em; margin-bottom: var(--space-4);">// beyond_the_terminal</div>
+      <h2 style="font-size: var(--text-3xl); margin-bottom: var(--space-8);">Security Is a Team Sport</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-6);">
+
+        {[
+          {
+            icon: '🤝',
+            title: 'Cross-functional Communication',
+            body: 'I translate vulnerability findings into executive summaries that drive budget decisions, and into developer-facing tickets that actually get resolved. The gap between "we have a critical finding" and "the team fixed it" is almost always a communication gap — I bridge it.'
+          },
+          {
+            icon: '⚖️',
+            title: 'Conflict Navigation',
+            body: 'Security recommendations create friction — they slow down releases, require rework, and challenge established processes. I approach these conversations with data and business context, not ultimatums. The goal is to be a trusted partner to engineering, not a blocker.'
+          },
+          {
+            icon: '🎯',
+            title: 'Prioritisation Under Pressure',
+            body: 'Not every critical CVSS score is a critical business risk, and not every medium finding is low priority. I contextualise risk against the specific environment, data sensitivity, and threat landscape to help teams focus on what actually matters.'
+          },
+          {
+            icon: '📖',
+            title: 'Continuous Learning',
+            body: 'The threat landscape moves faster than any curriculum. I maintain active practice through HTB, TryHackMe, and home lab work — not to collect badges, but to stay current with the techniques adversaries are actually using right now.'
+          },
+        ].map(item => (
+          <div class="card">
+            <div style="font-size: 24px; margin-bottom: var(--space-3);">{item.icon}</div>
+            <h3 style="font-size: var(--text-xl); margin-bottom: var(--space-3);">{item.title}</h3>
+            <p style="font-size: var(--text-sm); color: var(--text-muted); margin-bottom: 0; line-height: 1.7;">{item.body}</p>
+          </div>
+        ))}
+
+      </div>
+    </div>
+
+    <!-- Terminal whoami -->
+    <div class="terminal" style="margin-bottom: var(--space-16); max-width: 640px;">
+      <div class="terminal__header">
+        <span class="terminal__dot terminal__dot--red"></span>
+        <span class="terminal__dot terminal__dot--amber"></span>
+        <span class="terminal__dot terminal__dot--green"></span>
+        <span class="terminal__title">about ~ bash</span>
+      </div>
+      <div class="terminal__body">
+        <p><span class="terminal__prompt">thabo@portfolio:~$ </span>whoami</p>
+        <p style="color: var(--color-mint-300); margin: var(--space-3) 0;">Thabo Sibanda</p>
+
+        <p style="margin-top: var(--space-4);"><span class="terminal__prompt">thabo@portfolio:~$ </span>cat philosophy.txt</p>
+        <p style="color: var(--color-mist-300); margin: var(--space-3) 0; line-height: 1.7;">
+          <span class="terminal__comment"># Cool head. Warm heart.</span><br/>
+          Find what's broken → explain why it matters → fix it → document everything.
+        </p>
+
+        <p style="margin-top: var(--space-4);"><span class="terminal__prompt">thabo@portfolio:~$ </span>ls interests/</p>
+        <p style="color: var(--color-mist-300); margin: var(--space-3) 0;">
+          active-directory/&nbsp;&nbsp; web-app-security/&nbsp;&nbsp; threat-intelligence/<br/>
+          home-lab/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ctf-competition/&nbsp;&nbsp;&nbsp; cloud-security/
+        </p>
+
+        <p style="margin-top: var(--space-4);">
+          <span class="terminal__prompt">thabo@portfolio:~$ </span>
+          <span style="border-right: 2px solid var(--accent-primary); padding-right: 2px; animation: blink 1s step-end infinite;">&nbsp;</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div style="display: flex; gap: var(--space-4); flex-wrap: wrap;">
+      <a href="/evidence-locker" class="btn btn--primary">View Evidence Locker →</a>
+      <a href="/contact" class="btn btn--outline">Get in Touch</a>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+</style>
+
+</BaseLayout>

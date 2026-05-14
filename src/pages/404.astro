@@ -1,0 +1,81 @@
+---
+// src/pages/404.astro
+// Astro automatically serves this for all unmatched routes.
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="404 — Not Found"
+  description="Page not found."
+>
+  <section style="
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-16);
+  ">
+    <div>
+      <!-- Terminal-style 404 -->
+      <div class="terminal" style="max-width: 540px; margin: 0 auto 3rem; text-align: left;">
+        <div class="terminal__header">
+          <span class="terminal__dot terminal__dot--red"></span>
+          <span class="terminal__dot terminal__dot--amber"></span>
+          <span class="terminal__dot terminal__dot--green"></span>
+          <span class="terminal__title">bash — 404</span>
+        </div>
+        <div class="terminal__body">
+          <p>
+            <span class="terminal__prompt">thabo@portfolio:~$ </span>
+            find / -name "this-page"
+          </p>
+          <p style="color: var(--color-danger-400, #ef4444); margin: var(--space-3) 0;">
+            find: 'this-page': No such file or directory
+          </p>
+          <p style="margin-top: var(--space-4);">
+            <span class="terminal__prompt">thabo@portfolio:~$ </span>
+            <span style="border-right: 2px solid var(--accent-primary); padding-right: 2px; animation: blink 1s step-end infinite;">&nbsp;</span>
+          </p>
+        </div>
+      </div>
+
+      <div style="
+        font-family: var(--font-mono);
+        font-size: var(--text-6xl, 4rem);
+        font-weight: 800;
+        color: var(--accent-primary);
+        line-height: 1;
+        margin-bottom: var(--space-4);
+      ">404</div>
+
+      <h1 style="
+        font-size: var(--text-2xl);
+        margin-bottom: var(--space-4);
+        color: var(--text-primary);
+      ">Page not found</h1>
+
+      <p style="
+        color: var(--text-muted);
+        max-width: 40ch;
+        margin: 0 auto var(--space-10);
+        line-height: 1.6;
+      ">
+        This route doesn't exist in the Evidence Locker.
+        Head back to home base.
+      </p>
+
+      <div style="display: flex; gap: var(--space-4); justify-content: center; flex-wrap: wrap;">
+        <a href="/" class="btn btn--primary">← Back to Home</a>
+        <a href="/evidence-locker" class="btn btn--outline">Evidence Locker</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+// src/layouts/ProjectLayout.astro
+// ──────────────────────────────────────────────────────────────────
+// Layout for individual Evidence Locker entries (write-up pages).
+// Renders frontmatter metadata as a structured header, then the
+// Markdown content in a readable prose column.
+
+import BaseLayout from './BaseLayout.astro';
+
+export interface Props {
+  frontmatter: {
+    title:       string;
+    date:        string;
+    platform:    string;
+    difficulty:  string;
+    status:      string;
+    category:    string[];
+    tools:       string[];
+    cvss_score?: number;
+    featured?:   boolean;
+  };
+}
+
+const { frontmatter: fm } = Astro.props;
+
+// Format date for display
+const displayDate = new Date(fm.date).toLocaleDateString('en-ZA', {
+  year: 'numeric', month: 'long', day: 'numeric',
+});
+
+// Derive CVSS severity label
+function cvssLabel(score: number): string {
+  if (score >= 9.0) return 'Critical';
+  if (score >= 7.0) return 'High';
+  if (score >= 4.0) return 'Medium';
+  return 'Low';
+}
+
+const severity = fm.cvss_score ? cvssLabel(fm.cvss_score) : null;
+---
+
+<BaseLayout title={fm.title} description={`Security write-up: ${fm.title}`}>
+
+  <!-- Project Header ──────────────────────────────────────── -->
+  <header style="background: var(--bg-secondary); border-bottom: 1px solid var(--border-default); padding: var(--space-12) 0;">
+    <div class="container container--prose">
+
+      <!-- Breadcrumb -->
+      <nav style="font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); margin-bottom: var(--space-6);">
+        <a href="/" style="color: var(--text-muted);">~</a>
+        <span style="margin: 0 var(--space-2);">/</span>
+        <a href="/evidence-locker" style="color: var(--accent-secondary);">evidence-locker</a>
+        <span style="margin: 0 var(--space-2);">/</span>
+        <span style="color: var(--accent-primary);">{fm.title.toLowerCase().replace(/\s+/g, '-')}</span>
+      </nav>
+
+      <!-- Meta pills -->
+      <div style="display: flex; flex-wrap: wrap; gap: var(--space-2); margin-bottom: var(--space-6);">
+        <span class="badge badge--platform">{fm.platform}</span>
+        <span class="badge badge--platform">{fm.difficulty}</span>
+        <span class="badge badge--platform">{fm.status}</span>
+        {severity && (
+          <span class={`badge badge--${severity.toLowerCase()}`}>
+            CVSS {fm.cvss_score} — {severity}
+          </span>
+        )}
+      </div>
+
+      <h1 style="font-size: var(--text-4xl); margin-bottom: var(--space-4);">{fm.title}</h1>
+
+      <p style="color: var(--text-muted); font-family: var(--font-mono); font-size: var(--text-sm);">
+        {displayDate} &nbsp;·&nbsp; Thabo Sibanda
+      </p>
+
+      <!-- Tool chips -->
+      {fm.tools && fm.tools.length > 0 && (
+        <div style="margin-top: var(--space-6); display: flex; flex-wrap: wrap; gap: var(--space-2);">
+          {fm.tools.map((tool: string) => (
+            <span style="
+              font-family: var(--font-mono);
+              font-size: var(--text-xs);
+              padding: 0.25em 0.7em;
+              border-radius: 4px;
+              background: rgba(74,158,202,0.08);
+              color: var(--color-ice-300);
+              border: 1px solid rgba(74,158,202,0.15);
+            ">{tool}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  </header>
+
+  <!-- Write-up Content ────────────────────────────────────── -->
+  <article style="padding: var(--space-16) 0;">
+    <div class="container container--prose prose">
+      <slot />
+    </div>
+  </article>
+
+  <!-- Back navigation -->
+  <div style="padding: 0 0 var(--space-16); border-top: 1px solid var(--border-default);">
+    <div class="container container--prose" style="padding-top: var(--space-8);">
+      <a href="/evidence-locker" class="btn btn--outline">
+        ← Back to Evidence Locker
+      </a>
+    </div>
+  </div>
+
+</BaseLayout>
